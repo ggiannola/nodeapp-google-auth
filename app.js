@@ -7,7 +7,6 @@ const passport = require('passport');
 // Load User Model
 require('./models/User');
 
-
 // Passport Config
 require('./config/passport')(passport);
 
@@ -19,6 +18,7 @@ const keys = require('./config/keys');
 
 // Map global promises
 mongoose.Promise = global.Promise;
+
 // Mongoose Connect
 mongoose.connect(keys.mongoURI, {
     useNewUrlParser: true
@@ -32,8 +32,6 @@ app.get('/', (req,res) => {
     res.send('It works!');
 });
 
-// Use Routes
-app.use('/auth', auth);
 app.use(cookieParser());
 app.use(session({
     secret: 'secret',
@@ -41,11 +39,18 @@ app.use(session({
     saveUninitialized: false
 }))
 
-
-
 // Passport Middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Set global vars
+app.use((req, res, next) => {
+    res.locals.user = req.user || null;
+    next();
+});
+
+// Use Routes
+app.use('/auth', auth);
 
 const port = process.env.PORT || 5000;
 
