@@ -11,6 +11,7 @@ require('./models/User');
 require('./config/passport')(passport);
 
 // Load Routes
+const index = require('./routes/index');
 const auth = require('./routes/auth');
 
 // Load Keys
@@ -27,10 +28,6 @@ mongoose.connect(keys.mongoURI, {
     .catch(err => console.log(err));
 
 const app = express();
-
-app.get('/', (req,res) => {
-    res.send('It works!');
-});
 
 app.use(cookieParser());
 app.use(session({
@@ -50,6 +47,7 @@ app.use((req, res, next) => {
 });
 
 // Use Routes
+app.use('/', index);
 app.use('/auth', auth);
 
 const port = process.env.PORT || 5000;
